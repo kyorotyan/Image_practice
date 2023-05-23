@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 # 動画ファイルのパスを指定
-video_path = 'sample_video1.avi'
+video_path = '/Users/kouki/Image_practice/sample/image1.avi'
 
 # 動画を開くためのキャプチャオブジェクトを作成
 cap = cv2.VideoCapture(video_path)

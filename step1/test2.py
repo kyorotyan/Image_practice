@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 # 動画ファイルのパスを指定
-video_path = 'sample_video1.avi'
+video_path = '/Users/kouki/Image_practice/sample/image1.avi'
 
 # 取得するフレームの番号を指定
 target_frame_number = 100  # 例として100番目のフレームを取得する
