@@ -1,1 +1,1 @@
-# Image_practice
+# 画像解像の練習
