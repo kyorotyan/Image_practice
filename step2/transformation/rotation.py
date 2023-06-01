@@ -24,5 +24,5 @@ k=cv2.waitKey(0)
 if k==ord("q"):
     cv2.destroyAllWindows()
 elif k==ord("s"):
-    cv2.imwrite('rotated.png',rotated_image)
+    cv2.imwrite('../../sample/frame/rotated.png',rotated_image)
     cv2.destroyAllWindows()
