@@ -4,7 +4,7 @@ import numpy as np
 img=cv2.imread('../../sample/frame/sample_video1_gray_0100.jpg')
 
 #マーカの位置を指定
-marker_positions=np.array([[50,100],[200,50],[50,200]],dtype=np.float32)
+marker_positions=np.array([[50,100],[200,200],[50,200]],dtype=np.float32)
 
 #マーカを描画
 for marker_pos in marker_positions:
