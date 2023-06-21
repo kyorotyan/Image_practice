@@ -9,4 +9,5 @@ k=cv2.waitKey()
 if k==ord('q'):
     cv2.destroyAllWindows()
 elif k==ord('s'):
-    cv2.imwrite('../../sample/frame/thresh_img/thresh_tozero.jpg')
+    cv2.imwrite('../../sample/frame/thresh_img/thresh_tozero.jpg',dst)
+    cv2.destroyAllWindows()
