@@ -1,6 +1,6 @@
 import cv2
 
-img=cv2.imread('../../sample/frame/sample_video1_gray_0100.jpg',cv2.IMREAD_GRAYSCALE)
+img=cv2.imread('../../sample/frame/sample.jpg',cv2.IMREAD_GRAYSCALE)
 th,dst=cv2.threshold(img,115,255,cv2.THRESH_BINARY_INV)
 #cv2.threshold(src,thresh,maxValue,thresholoType)
 #src：インプットの画像（白黒）

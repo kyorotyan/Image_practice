@@ -1,6 +1,6 @@
 import cv2
 
-img=cv2.imread('../../sample/frame/sample_video1_gray_0100.jpg',cv2.IMREAD_GRAYSCALE)
+img=cv2.imread('../../sample/frame/sample.jpg',cv2.IMREAD_GRAYSCALE)
 #閾値処理
 thresholo_value=155 #閾値の値を設定する
 max_value=255 #二値化後のピクセル値の最大値を指定
