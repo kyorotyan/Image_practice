@@ -17,7 +17,7 @@ def draw_actin_filament():
 
     x_molecules = np.linspace(0, filament_length, num_molecules)
     y_molecules = 1.5 * np.sin(2 * np.pi *  x_molecules / filament_length)
-    y_molecules_neg = -4 * y_molecules  
+    y_molecules_neg = -1 * y_molecules  
 
     x_molecules_blue = np.roll(x_molecules, -1) - molecule_size / 2
     y_molecules_blue = 1.5 * np.sin(2 * np.pi * x_molecules_blue / filament_length)
