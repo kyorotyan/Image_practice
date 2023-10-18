@@ -18,6 +18,7 @@ def get_gaussian(mx, my, sig, r_mesh=20, xy_h=0.2):
     gauss_sigma = np.array([[xx_sigma, xy_sigma],[yx_sigma, yy_sigma]])
     gauss_sigma_det = np.linalg.det(gauss_sigma)
     gauss_sigma_inv = np.linalg.inv(gauss_sigma)
+    #ガウス分布の強度
     I_max   = 100
     def func_gauss(x, y):
         mtx = np.array([x, y]) - gauss_mu
@@ -25,6 +26,7 @@ def get_gaussian(mx, my, sig, r_mesh=20, xy_h=0.2):
     intensity = np.vectorize(func_gauss)(x_gauss,y_gauss)
     return intensity
 
+#アクチンフィラメントの座標計算
 d_gactin    = 5.5
 N_subunit   = 13
 d_filament  = 9.0 - d_gactin
