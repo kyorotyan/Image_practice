@@ -177,3 +177,4 @@ ax.contourf(x_gauss, y_gauss, intensity_gaussian, 10, cmap=plt.cm.bone)
 plt.show()
 
 '''
+
