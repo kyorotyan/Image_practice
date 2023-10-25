@@ -27,28 +27,28 @@ def get_gaussian(mx, my, sig, r_mesh=20, xy_h=0.2):
     return intensity
 
 #アクチンフィラメントの座標計算
-d_gactin    = 5.5
-N_subunit   = 13
-d_filament  = 9.0 - d_gactin
-pitch       = N_subunit * d_gactin
+molecule_size    = 5.5
+num_molecules   = 13
+d_filament  = 9.0 - molecule_size
+filament_length       = num_molecules * molecule_size
 x_min   = -5
 x_max   = 80
 N_x     = 85
 N_repeat = 3
 x   = np.linspace(x_min, x_max, N_x)
-f1 = (d_filament/2)*np.sin((2*np.pi/pitch)*x)
-f2 = -(d_filament/2)*np.sin((2*np.pi/pitch)*x-2*np.pi*((d_gactin/2)/pitch))
-x1  = np.arange(0, N_repeat*pitch+d_gactin, d_gactin)
-x2  = np.add(x1, d_gactin/2)
-y1 = (d_filament/2)*np.sin((2*np.pi/pitch)*x1)
-y2 = -(d_filament/2)*np.sin((2*np.pi/pitch)*x2-2*np.pi*((d_gactin/2)/pitch))
+f1 = (d_filament/2)*np.sin((2*np.pi/filament_length)*x)
+f2 = -(d_filament/2)*np.sin((2*np.pi/filament_length)*x-2*np.pi*((molecule_size/2)/filament_length))
+x1  = np.arange(0, N_repeat*filament_length+molecule_size, molecule_size)
+x2  = np.add(x1, molecule_size/2)
+y1 = (d_filament/2)*np.sin((2*np.pi/filament_length)*x1)
+y2 = -(d_filament/2)*np.sin((2*np.pi/filament_length)*x2-2*np.pi*((molecule_size/2)/filament_length))
 n_round = 1
 x1 = np.round(x1, decimals=n_round)
 y1 = np.round(y1, decimals=n_round)
 x2 = np.round(x2, decimals=n_round)
 y2 = np.round(y2, decimals=n_round)
 r_mesh = 120
-xy_h    = 1/np.power(10,n_round)
+xy_h    = 65.0
 x_min,x_max = np.amin(x1)-r_mesh, np.amax(x2)+r_mesh
 y_min,y_max = np.amin(y1)-r_mesh, np.amax(y2)+r_mesh
 x_mesh = np.arange(x_min, x_max, xy_h)
@@ -61,32 +61,39 @@ scale = 132.9
 rg = int(r_mesh/xy_h)
 sig = scale * 2
 for i in range(len(x1)):
-    px,py = x1[i],y1[i]
-    idx_x = int((px-x_min)*np.power(10,n_round))
-    idx_y = int((py-y_min)*np.power(10,n_round))
-    g_intensity = get_gaussian(px,py,sig,r_mesh=r_mesh, xy_h=xy_h)
-    intensity_gaussian[(idx_y-rg):(idx_y+rg),(idx_x-rg):(idx_x+rg)] += g_intensity
-    px,py = x2[i],y2[i]
-    idx_x = int(np.round((px-x_min)*np.power(10,n_round), decimals=1))
-    idx_y = int(np.round((py-y_min)*np.power(10,n_round), decimals=1))
-    g_intensity = get_gaussian(px,py,sig,r_mesh=r_mesh, xy_h=xy_h)
-    intensity_gaussian[(idx_y-rg):(idx_y+rg),(idx_x-rg):(idx_x+rg)] += g_intensity
+    for coord_set in [(x1[i], y1[i]), (x2[i], y2[i])]:
+        px, py = coord_set
+        g_intensity = get_gaussian(px, py, sig, r_mesh=r_mesh, xy_h=xy_h)
+        
+        idx_x = int((px-x_min)/xy_h)
+        idx_y = int((py-y_min)/xy_h)
 
-# Calculate the centroid of the terminal actin molecule
+        start_x = max(idx_x-rg, 0)
+        end_x = min(idx_x+rg, intensity_gaussian.shape[1])
+
+        start_y = max(idx_y-rg, 0)
+        end_y = min(idx_y+rg, intensity_gaussian.shape[0])
+
+        g_intensity_cropped = g_intensity[0:end_y-start_y, 0:end_x-start_x]
+
+        intensity_gaussian[start_y:end_y, start_x:end_x] += g_intensity_cropped
+
+
+
+# 末端アクチン分子の重心を計算
 centroid_x = np.mean([x1[-1], x2[-1]])
 centroid_y = np.mean([y1[-1], y2[-1]])
 
-# Define the size of the new image, ensuring that the centroid of the terminal actin molecule is at the center
+#末端アクチン分子の重心が中心になるように
 new_img_size = int(2 * (r_mesh / xy_h + 1))
 
-# Create a blank intensity map of the new size
+# 新しいサイズの空の強度マップの作成
 new_intensity_map = np.zeros((new_img_size, new_img_size), np.float64)
 
-# Calculate the offset to place the centroid at the center of the new image
+#新しい画像の中心に重心を配置するための計算
 offset_x = new_img_size // 2 - int((centroid_x - x_min) * np.power(10, n_round))
 offset_y = new_img_size // 2 - int((centroid_y - y_min) * np.power(10, n_round))
 
-# Transfer the intensities from the old map to the new map with the offset
 for i in range(intensity_gaussian.shape[0]):
     for j in range(intensity_gaussian.shape[1]):
         new_i = i + offset_y
@@ -95,12 +102,11 @@ for i in range(intensity_gaussian.shape[0]):
             new_intensity_map[new_i, new_j] = intensity_gaussian[i, j]
 
 img_max = 255
-# ...
-# Rescale the image such that 1 pixel = 1 nm
+
 output_size = (int(new_img_size * np.sqrt(scale)), int(new_img_size * np.sqrt(scale)))
 rescaled_intensity_map = cv2.resize(new_intensity_map, output_size, interpolation=cv2.INTER_CUBIC)
 
-# Save the rescaled image
+# 画像を保存
 rescaled_intensity_max = np.amax(rescaled_intensity_map)
 rescaled_intensity_map = np.divide(np.multiply(rescaled_intensity_map.copy(), img_max), rescaled_intensity_max)
 rescaled_img = rescaled_intensity_map.astype(np.uint8)
